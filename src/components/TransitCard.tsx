@@ -1,7 +1,7 @@
 import type { TransitState } from '../types/transit';
 import { ArrivalList } from './ArrivalList';
 import { StatusPill } from './StatusPill';
-import { relativeLabel } from '../lib/time';
+import { formatTime } from '../lib/time';
 
 interface Props {
   mode: 'bus' | 'train';
@@ -44,7 +44,7 @@ export function TransitCard({ mode, route, stopName, directionLabel, state }: Pr
             {error ?? 'Live data temporarily unavailable.'}
             {lastUpdated && (
               <span className="transit-card__last-seen">
-                {' '}Last seen {relativeLabel(lastUpdated)}.
+                {' '}Last seen at {formatTime(lastUpdated)}.
               </span>
             )}
           </p>
@@ -67,7 +67,7 @@ export function TransitCard({ mode, route, stopName, directionLabel, state }: Pr
       </div>
 
       {lastUpdated && status === 'ok' && (
-        <p className="transit-card__footer">Updated {relativeLabel(lastUpdated)}</p>
+        <p className="transit-card__footer">Updated at {formatTime(lastUpdated)}</p>
       )}
     </div>
   );
