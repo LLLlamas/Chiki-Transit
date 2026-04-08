@@ -21,11 +21,9 @@ export function ArrivalList({ arrivals, mode, route }: Props) {
     <ul className="arrivals">
       {future.map((a, i) => (
         <li key={a.id} className={`arrivals__item ${i === 0 ? 'arrivals__item--next' : ''}`}>
-          <div className="arrivals__time-block">
-            <span className="arrivals__wait">{arrivalLabel(a.waitMinutes)}</span>
-            <span className="arrivals__clock">arrives {formatTime(a.expectedAt)}</span>
-          </div>
           <span className="arrivals__badge">{label}</span>
+          <span className="arrivals__wait">{arrivalLabel(a.waitMinutes)}</span>
+          <span className="arrivals__clock">arrives {formatTime(a.expectedAt)}</span>
         </li>
       ))}
     </ul>

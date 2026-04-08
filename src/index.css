@@ -40,48 +40,91 @@ html, body {
   max-width: 480px;
   margin: 0 auto;
   padding: 0 0 env(safe-area-inset-bottom) 0;
+  /* push content below fixed clock bar */
+  padding-top: calc(36px + env(safe-area-inset-top));
 }
 
 .app__main {
   flex: 1;
-  padding: 0 16px 24px;
+  padding: 12px 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* ─── Header ─────────────────────────────────────────────────────────────── */
+/* ─── Fixed clock bar ────────────────────────────────────────────────────── */
+.app-header__clock-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #0a0a14;
+  border-bottom: 1px solid var(--border);
+  padding: calc(6px + env(safe-area-inset-top)) 16px 6px;
+  height: calc(36px + env(safe-area-inset-top));
+  max-width: 480px;
+  margin: 0 auto;
+  /* stretch full width on narrow screens */
+  width: 100%;
+}
+
+/* On wider screens, constrain to card width */
+@media (min-width: 480px) {
+  .app-header__clock-bar {
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+}
+
+.app-header__clock-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.app-header__clock-time {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-rec-similar);
+  letter-spacing: 0.03em;
+}
+
+/* ─── Header body (scrolls with page) ───────────────────────────────────── */
 .app-header {
-  padding: 16px 16px 12px;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
-  padding-top: calc(16px + env(safe-area-inset-top));
+}
+
+.app-header__body {
+  padding: 12px 16px 10px;
 }
 
 .app-header__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .app-header__title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.app-header__now {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--accent-rec-similar);
-  margin-top: 1px;
-}
-
 .app-header__updated {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--text-dim);
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 /* ─── Route display ──────────────────────────────────────────────────────── */
@@ -408,7 +451,7 @@ html, body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .arrivals__empty {
@@ -416,12 +459,12 @@ html, body {
   color: var(--text-dim);
 }
 
+/* Single-line layout: [badge] [in X min] [·] [arrives HH:MM] */
 .arrivals__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 8px;
+  padding: 7px 10px;
   border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.03);
 }
@@ -430,38 +473,12 @@ html, body {
   background: rgba(255,255,255,0.06);
 }
 
-.arrivals__time-block {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.arrivals__wait {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--text-dim);
-}
-
-.arrivals__item--next .arrivals__wait {
-  font-size: 1.35rem;
-  color: var(--text);
-}
-
-.arrivals__clock {
-  font-size: 0.72rem;
-  color: var(--text-dim);
-}
-
-.arrivals__item--next .arrivals__clock {
-  color: var(--text-muted);
-}
-
 .arrivals__badge {
   background: var(--border);
   color: var(--text-muted);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: 5px;
   letter-spacing: 0.04em;
   flex-shrink: 0;
@@ -476,6 +493,96 @@ html, body {
   background: var(--accent-bus);
   color: #000;
 }
+
+.arrivals__wait {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.arrivals__item--next .arrivals__wait {
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.arrivals__clock {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.arrivals__clock::before {
+  content: '· ';
+  color: var(--border);
+}
+
+.arrivals__item--next .arrivals__clock {
+  color: var(--text-muted);
+}
+
+/* ─── Insight panel ──────────────────────────────────────────────────────── */
+.insight-panel {
+  margin-top: 4px;
+}
+
+.insight-panel__toggle {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.insight-panel__toggle:active { opacity: 0.7; }
+
+.insight-panel__body {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.insight-section__heading {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+
+.insight-section__text {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.insight-section__scores {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.insight-section--rec { border-left-width: 3px; }
+.insight-section--bus         { border-left-color: var(--accent-bus); }
+.insight-section--train       { border-left-color: var(--accent-train); }
+.insight-section--similar     { border-left-color: var(--accent-rec-similar); }
+.insight-section--unavailable { border-left-color: var(--border); }
 
 /* ─── Skeleton loading ───────────────────────────────────────────────────── */
 .transit-card__skeleton {

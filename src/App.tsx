@@ -2,11 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { TripDirection, TransitState } from './types/transit';
 import { COMMUTE_CONFIG } from './config/commute';
 import { fetchBus, fetchTrain } from './lib/api';
-import { recommend } from './lib/recommendation';
 import { isStale } from './lib/time';
 import { Header } from './components/Header';
 import { TransitCard } from './components/TransitCard';
-import { RecommendationCard } from './components/RecommendationCard';
+import { InsightPanel } from './components/InsightPanel';
 
 const DIRECTION_KEY = 'chiki_direction';
 
@@ -99,8 +98,6 @@ export default function App() {
     setDirection(next);
   }
 
-  const recommendation = recommend(bus.data, train.data, cfg);
-
   return (
     <div className="app">
       <Header
@@ -114,13 +111,6 @@ export default function App() {
       />
 
       <main className="app__main">
-        <RecommendationCard
-          recommendation={recommendation}
-          bus={bus.data}
-          train={train.data}
-          cfg={cfg}
-        />
-
         <div className="cards">
           <TransitCard
             mode="bus"
@@ -139,6 +129,8 @@ export default function App() {
             state={train}
           />
         </div>
+
+        <InsightPanel bus={bus.data} train={train.data} cfg={cfg} />
       </main>
     </div>
   );

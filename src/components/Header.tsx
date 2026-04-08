@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { TripDirection } from '../types/transit';
 
 interface Props {
@@ -19,35 +20,49 @@ export function Header({
   isLoading,
   lastRefreshed,
 }: Props) {
-  const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const [now, setNow] = useState(() =>
+    new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  );
+
+  // Tick every second so the clock stays live
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNow(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const lastUpdatedTime = lastRefreshed
     ? new Date(lastRefreshed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     : null;
 
   return (
     <header className="app-header">
-      <div className="app-header__top">
-        <div>
-          <h1 className="app-header__title">Chiki Transit</h1>
-          <p className="app-header__now">Now {now}</p>
-        </div>
-        <button
-          className={`btn btn--refresh ${isLoading ? 'btn--spinning' : ''}`}
-          onClick={onRefresh}
-          disabled={isLoading}
-          aria-label="Refresh arrivals"
-        >
-          ↻
-        </button>
+      {/* Fixed clock bar */}
+      <div className="app-header__clock-bar">
+        <span className="app-header__clock-label">TIME NOW</span>
+        <span className="app-header__clock-time">{now}</span>
       </div>
 
-      <div className="app-header__route">
+      {/* Route + controls */}
+      <div className="app-header__body">
+        <div className="app-header__top">
+          <h1 className="app-header__title">Chiki Transit</h1>
+          <button
+            className={`btn btn--refresh ${isLoading ? 'btn--spinning' : ''}`}
+            onClick={onRefresh}
+            disabled={isLoading}
+            aria-label="Refresh arrivals"
+          >
+            ↻
+          </button>
+        </div>
+
         <div className="route-display">
           <div className="route-display__row">
             <span className="route-display__label">Starting Point</span>
             <span className="route-display__addr">{startAddress}</span>
           </div>
-
           <div className="route-display__divider">
             <div className="route-display__line" />
             <button className="btn btn--swap" onClick={onSwap} aria-label="Swap trip direction">
@@ -55,20 +70,19 @@ export function Header({
             </button>
             <div className="route-display__line" />
           </div>
-
           <div className="route-display__row">
             <span className="route-display__label route-display__label--end">End Point</span>
             <span className="route-display__addr">{destinationAddress}</span>
           </div>
         </div>
-      </div>
 
-      {lastUpdatedTime && (
-        <p className="app-header__updated">
-          Last updated {lastUpdatedTime}
-          {direction === 'reverse' && ' · Return trip'}
-        </p>
-      )}
+        {lastUpdatedTime && (
+          <p className="app-header__updated">
+            Last updated {lastUpdatedTime}
+            {direction === 'reverse' && ' · Return trip'}
+          </p>
+        )}
+      </div>
     </header>
   );
 }
