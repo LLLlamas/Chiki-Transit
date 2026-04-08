@@ -1,5 +1,6 @@
 import type { Arrival } from '../types/transit';
 import { arrivalLabel, filterFutureArrivals } from '../lib/format';
+import { formatTime } from '../lib/time';
 
 interface Props {
   arrivals: Arrival[];
@@ -14,16 +15,17 @@ export function ArrivalList({ arrivals, mode, route }: Props) {
     return <p className="arrivals__empty">No upcoming arrivals found.</p>;
   }
 
+  const label = mode === 'bus' ? route : `${route} train`;
+
   return (
     <ul className="arrivals">
       {future.map((a, i) => (
         <li key={a.id} className={`arrivals__item ${i === 0 ? 'arrivals__item--next' : ''}`}>
-          <span className="arrivals__badge">{mode === 'bus' ? route : route}</span>
-          <span className="arrivals__label">
-            {i === 0 ? 'Next ' : ''}
-            {mode === 'bus' ? 'bus' : `${route} train`}{' '}
-            <strong>{arrivalLabel(a.waitMinutes)}</strong>
-          </span>
+          <div className="arrivals__time-block">
+            <span className="arrivals__wait">{arrivalLabel(a.waitMinutes)}</span>
+            <span className="arrivals__clock">arrives {formatTime(a.expectedAt)}</span>
+          </div>
+          <span className="arrivals__badge">{label}</span>
         </li>
       ))}
     </ul>

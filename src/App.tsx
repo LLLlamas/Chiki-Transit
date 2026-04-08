@@ -126,6 +126,7 @@ export default function App() {
             mode="bus"
             route={cfg.bus.route}
             stopName={cfg.bus.originStopName}
+            destinationStopName={cfg.bus.destinationStopName}
             directionLabel={cfg.bus.directionLabel}
             state={bus}
           />
@@ -133,6 +134,7 @@ export default function App() {
             mode="train"
             route={cfg.train.line}
             stopName={cfg.train.originStationName}
+            destinationStopName={cfg.train.destinationStationName}
             directionLabel={cfg.train.directionLabel}
             state={train}
           />
