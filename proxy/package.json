@@ -1,0 +1,12 @@
+{
+  "name": "chiki-transit-proxy",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.81.0"
+  }
+}

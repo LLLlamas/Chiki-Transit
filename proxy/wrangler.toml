@@ -1,0 +1,15 @@
+name = "chiki-transit-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Secrets are set via `wrangler secret put`:
+#   wrangler secret put BUS_TIME_API_KEY
+#
+# MTA subway feed requires no API key as of 2026.
+# For local Worker development, Wrangler reads `proxy/.dev.vars`.
+# Official subway realtime feed reference:
+#   https://api.mta.info/#/subwayRealTimeFeeds
+
+[vars]
+# Non-secret config — safe to commit
+ALLOWED_ORIGIN = "https://LLLlamas.github.io"
