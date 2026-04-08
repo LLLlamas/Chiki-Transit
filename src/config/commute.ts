@@ -23,7 +23,7 @@
 //   Update PROXY_BASE_URL below with your deployed worker URL.
 
 export const PROXY_BASE_URL: string =
-  import.meta.env.VITE_PROXY_URL ?? 'https://chiki-transit-proxy.lorenzoleollamas.workers.dev';
+  import.meta.env.VITE_PROXY_URL || 'https://chiki-transit-proxy.lorenzoleollamas.workers.dev';
 
 export const COMMUTE_CONFIG = {
   refreshMs: 30_000,
