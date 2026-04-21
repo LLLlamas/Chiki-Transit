@@ -1,1 +1,26 @@
-{"name":"chiki-transit","private":true,"version":"0.0.1","type":"module","scripts":{"dev":"vite","build":"tsc --noEmit && vite build","preview":"vite preview","type-check":"tsc --noEmit"},"devDependencies":{"@types/react":"^19.2.14","@types/react-dom":"^19.2.3","@vitejs/plugin-react":"^6.0.1","typescript":"^6.0.2","vite":"^8.0.7"},"dependencies":{"react":"^19.2.4","react-dom":"^19.2.4"}}
+{
+  "name": "chiki-transit",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "npm run build && wrangler dev",
+    "type-check": "tsc --noEmit",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.33.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.7",
+    "wrangler": "^4.84.0"
+  },
+  "dependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  }
+}
