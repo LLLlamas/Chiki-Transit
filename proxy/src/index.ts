@@ -445,6 +445,7 @@ async function handleBus(trip: Trip, env: Env, origin: string): Promise<Response
         waitMinutes: a.waitMinutes,
       })),
       alerts,
+      suspended: false,
       source: 'MTA Bus Time SIRI StopMonitoring',
     },
     origin,
@@ -502,6 +503,12 @@ async function handleTrain(trip: Trip, env: Env, origin: string): Promise<Respon
     }
   }
 
+  // Detect service suspension: MTA alerts say "No [7]..." but the trip feed keeps
+  // publishing phantom arrivals anyway. If the alert clearly indicates no service,
+  // we clear arrivals so the UI never shows trains that aren't coming.
+  // Pattern matches: "No [7] trains...", "No [7X] trains...", "No [7][7X] trains..."
+  const suspended = alerts.some((a) => /No \[7[X\]]*\]/.test(a));
+
   return json(
     {
       mode: 'train',
@@ -509,8 +516,9 @@ async function handleTrain(trip: Trip, env: Env, origin: string): Promise<Respon
       stationName: cfg.stationName,
       direction: cfg.directionLabel,
       updatedAt: new Date().toISOString(),
-      arrivals,
+      arrivals: suspended ? [] : arrivals,
       alerts,
+      suspended,
       source: 'MTA Subway GTFS-Realtime',
     },
     origin,

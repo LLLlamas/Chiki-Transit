@@ -65,26 +65,39 @@ export function TransitCard({ mode, route, stopName, destinationStopName, direct
 
         {data && (
           <>
-            <ArrivalList arrivals={data.arrivals} mode={mode} route={route} />
+            {data.suspended ? (
+              /* ── Service suspended: show reason inline, no fake arrivals ── */
+              <div className="transit-card__no-service">
+                <p className="transit-card__no-service-title">⛔ No service at this stop</p>
+                {alerts.map((a, i) => (
+                  <p key={i} className="transit-card__alert transit-card__alert--inline">{a}</p>
+                ))}
+              </div>
+            ) : (
+              /* ── Normal state: arrivals + collapsible alerts ── */
+              <>
+                <ArrivalList arrivals={data.arrivals} mode={mode} route={route} />
 
-            {alerts.length > 0 && (
-              <div className="transit-card__alerts-section">
-                <button
-                  className="transit-card__alerts-toggle"
-                  onClick={() => setAlertsOpen((o) => !o)}
-                  aria-expanded={alertsOpen}
-                >
-                  ⚠ {alerts.length} service alert{alerts.length > 1 ? 's' : ''}
-                  <span className="transit-card__alerts-chevron">{alertsOpen ? '▲' : '▼'}</span>
-                </button>
-                {alertsOpen && (
-                  <div className="transit-card__alerts">
-                    {alerts.map((a, i) => (
-                      <p key={i} className="transit-card__alert">{a}</p>
-                    ))}
+                {alerts.length > 0 && (
+                  <div className="transit-card__alerts-section">
+                    <button
+                      className="transit-card__alerts-toggle"
+                      onClick={() => setAlertsOpen((o) => !o)}
+                      aria-expanded={alertsOpen}
+                    >
+                      ⚠ {alerts.length} service alert{alerts.length > 1 ? 's' : ''}
+                      <span className="transit-card__alerts-chevron">{alertsOpen ? '▲' : '▼'}</span>
+                    </button>
+                    {alertsOpen && (
+                      <div className="transit-card__alerts">
+                        {alerts.map((a, i) => (
+                          <p key={i} className="transit-card__alert">{a}</p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
           </>
         )}

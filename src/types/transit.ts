@@ -14,6 +14,7 @@ export interface TransitData {
   updatedAt: string;    // ISO 8601
   arrivals: Arrival[];
   alerts: string[];
+  suspended: boolean;   // true when MTA alert indicates no service at this stop
   source: string;
 }
 
