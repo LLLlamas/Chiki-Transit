@@ -236,7 +236,13 @@ function parseGtfsRt(feedBuf: Uint8Array): StopArrival[] {
 
 // ─── Alert feed parser ────────────────────────────────────────────────────────
 
-/** Check if an EntitySelector (field 5 of Alert) has route_id "7" or "7X". */
+// The camsys/subway-alerts feed uses internal numeric route IDs, not GTFS route_ids.
+// 7 train mappings confirmed from live feed inspection (2026-04-21):
+//   701 = 7 local, 716 = 7X express, 726 = 7 diamond / other 7-variant
+// GTFS-style "7" / "7X" are kept as fallback in case the format ever changes.
+const ROUTE_7_IDS = new Set(['7', '7X', '701', '716', '726']);
+
+/** Check if an EntitySelector (field 5 of Alert) has a route_id for the 7 / 7X. */
 function entitySelectorMatchesRoute7(buf: Uint8Array): boolean {
   let pos = 0;
   while (pos < buf.length) {
@@ -246,7 +252,7 @@ function entitySelectorMatchesRoute7(buf: Uint8Array): boolean {
       const [sub, p2] = readLenDelim(buf, pos); pos = p2;
       if (fn === 5) { // route_id
         const routeId = new TextDecoder().decode(sub);
-        if (routeId === '7' || routeId === '7X') return true;
+        if (ROUTE_7_IDS.has(routeId)) return true;
       }
     } else {
       pos = skipField(buf, pos, wt);
@@ -321,6 +327,7 @@ function parseAlerts(feedBuf: Uint8Array): string[] {
       let apos = 0;
       let affectsRoute7 = false;
       let headerText: string | null = null;
+      let descText: string | null = null;
 
       while (apos < alertBuf.length) {
         const [atag, ap1] = decodeVarint(alertBuf, apos); apos = ap1;
@@ -329,8 +336,10 @@ function parseAlerts(feedBuf: Uint8Array): string[] {
           const [sub, ap2] = readLenDelim(alertBuf, apos); apos = ap2;
           if (afn === 5) { // informed_entity (repeated EntitySelector)
             if (entitySelectorMatchesRoute7(sub)) affectsRoute7 = true;
-          } else if (afn === 10 && headerText === null) { // header_text (TranslatedString)
+          } else if (afn === 10 && headerText === null) { // header_text
             headerText = readTranslatedStringText(sub);
+          } else if (afn === 11 && descText === null) { // description_text
+            descText = readTranslatedStringText(sub);
           }
         } else {
           apos = skipField(alertBuf, apos, awt);
@@ -338,7 +347,10 @@ function parseAlerts(feedBuf: Uint8Array): string[] {
       }
 
       if (affectsRoute7 && headerText) {
-        alerts.push(headerText);
+        // Return header. If a short description exists (first sentence only), append it.
+        const firstSentence = descText?.split('\n')[0] ?? null;
+        const full = firstSentence ? `${headerText}\n${firstSentence}` : headerText;
+        alerts.push(full);
       }
     }
   }
